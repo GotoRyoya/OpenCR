@@ -54,7 +54,7 @@ bool Turtlebot3MotorDriver::init(String turtlebot3)
   }
 
   // Enable Dynamixel Torque
-  setTorque(true);
+  setTorque(true);  //C++ではbool型のtrueは実質的に1、falseは0
 
   groupSyncWriteVelocity_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, ADDR_X_GOAL_VELOCITY, LEN_X_GOAL_VELOCITY);
   groupSyncReadEncoder_   = new dynamixel::GroupSyncRead(portHandler_, packetHandler_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
@@ -72,11 +72,13 @@ bool Turtlebot3MotorDriver::init(String turtlebot3)
 
 bool Turtlebot3MotorDriver::setTorque(bool onoff)
 {
-  uint8_t dxl_error = 0;
+  uint8_t dxl_error = 0;        //8ビットの符号なし整数 
   int dxl_comm_result = COMM_TX_FAIL;
 
   torque_ = onoff;
 
+  //write1ByteTxRxでデータを書き込んで、getTxRxResultでエラーパケットを受け取る。
+  //trueであれば(成功）、falseであれば失敗。
   dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, DXL_LEFT_ID, ADDR_X_TORQUE_ENABLE, onoff, &dxl_error);
   if(dxl_comm_result != COMM_SUCCESS)
   {
